@@ -29,7 +29,7 @@ fi
 
 alias yaourt='paru'
 alias yay='paru'
-
+alias paru-find='paru -Slq | fzf --multi --preview "paru -Si {1}"'
 
 alias rm='rm -i'
 

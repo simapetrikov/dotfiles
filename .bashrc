@@ -12,6 +12,8 @@ export BRONSER="firefox"
 export READER="zathura"
 export PREFIX="~/.local"
 
+export HISTFILE=$HOME/.bash_history
+
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTCONTROL=ignoredups
@@ -47,6 +49,12 @@ alias notes='nvim ~/Documents/vimwiki/notes/'
 
 alias hrg='history | rg'
 
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit -m'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate --all'
+
 #PS1='[\u@\h \W]\$ ' old one
 
 parse_git_branch() {
@@ -58,3 +66,6 @@ export PS1="\[\e[32m\]\u@\h:\[\e[34m\]\w\[\e[0m\]\$(parse_git_branch)$ "
 echo -e "              Howdy, \033[35m$(whoami)\033[37m!"
 echo "   /ᐠ-˕-マ  ノ"
 echo "乀(  J し)"
+
+# zoxide
+eval "$(zoxide init bash)"

@@ -55,6 +55,7 @@ alias gc='git commit -m'
 alias gp='git push'
 alias gl='git log --oneline --graph --decorate --all'
 
+
 #PS1='[\u@\h \W]\$ ' old one
 
 parse_git_branch() {

@@ -1,3 +1,4 @@
 return{
-   "turbio/bracey.vim"
+  "turbio/bracey.vim",
+  ft = { "html", "css", "js" }
 }

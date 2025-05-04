@@ -7,6 +7,7 @@
 export PATH="$HOME/bin:$PATH"
 export MANPAGER="nvim +Man!"
 export EDITOR="nvim" 
+export TERM="kitty" 
 export TERMINAL="kitty" 
 export BRONSER="firefox" 
 export READER="zathura"
@@ -54,6 +55,7 @@ alias ga='git add'
 alias gc='git commit -m'
 alias gp='git push'
 alias gl='git log --oneline --graph --decorate --all'
+alias lg='lazygit'
 
 
 #PS1='[\u@\h \W]\$ ' old one

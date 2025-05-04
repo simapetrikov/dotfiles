@@ -1,0 +1,115 @@
+set shell bash
+set drawbox
+set scrolloff 5
+set icons
+
+map x $$f
+map X !$f
+
+bash_escape_all() {
+    for arg in "$@"; do
+        printf "%q " "$arg"
+    done
+    echo
+}
+
+cmd trash ${{
+    while IFS= read -r f; do
+        trash "$f"
+    done <<< "$fx"
+}}
+
+map D :trash 
+
+map B &blobdrop $fs
+
+
+cmd mkdir %{{
+    IFS=" "
+    file="$*"
+    mkdir -p -- "$file"
+    if [ -n "$fs" ]; then
+        mv -- $fs "$file"
+        lf -remote "send $id unselect"
+    fi
+}}
+
+map a :push !mkdir<space>
+
+cmd extract ${{
+    set -f
+    case $f in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
+        *.tar.gz|*.tgz) tar xzvf $f;;
+        *.tar.xz|*.txz) tar xJvf $f;;
+        *.zip) unzip $f;;
+        *.rar) unrar x $f;;
+        *.7z) 7z x $f;;
+    esac
+}}
+
+cmd tar ${{
+    set -f
+    mkdir $1
+    cp -r $fx $1
+    tar czf $1.tar.gz $1
+    rm -rf $1
+}}
+
+cmd zip ${{
+    set -f
+    mkdir $1
+    cp -r $fx $1
+    zip -r $1.zip $1
+    rm -rf $1
+}}
+
+# bash/any POSIX shell
+
+cmd z %{{
+    result="$(zoxide query --exclude "$PWD" "$@" | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    lf -remote "send $id cd \"$result\""
+}}
+
+cmd zi ${{
+    result="$(zoxide query -i | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    lf -remote "send $id cd \"$result\""
+}}
+
+cmd on-cd &{{
+    zoxide add "$PWD"
+}}
+
+cmd fzf $$EDITOR $(fd "$1" | fzf)
+map f push :fzf<space>
+
+
+cmd fzf_search ${{
+    cmd="rg --column --line-number --no-heading --color=always --smart-case"
+    fzf --ansi --disabled --layout=reverse --header="Search in files" --delimiter=: \
+        --bind="start:reload([ -n {q} ] && $cmd -- {q} || true)" \
+        --bind="change:reload([ -n {q} ] && $cmd -- {q} || true)" \
+        --bind='enter:become(lf -remote "send $id select \"$(printf "%s" {1} | sed '\''s/\\/\\\\/g;s/"/\\"/g'\'')\"")' \
+        --preview='bat --color=always --style=plain --highlight-line={2} -- {1}'
+#        --preview='~/.config/lf/cleaner.sh; ~/.config/lf/scope.sh {1} "$FZF_PREVIEW_COLUMNS" "$FZF_PREVIEW_LINES" "$FZF_PREVIEW_LEFT" "$FZF_PREVIEW_TOP"'
+}}
+map gs :fzf_search
+
+
+cmd follow-link %{{
+  lf -remote "send $id select \"$(readlink -- "$f" | sed 's/\\/\\\\/g;s/"/\\"/g')\""
+}}
+
+map gL follow-link
+
+
+
+map p :paste; clear
+
+
+
+
+set preview true
+#set previewtruecolor
+set previewer ~/.config/lf/scope.sh
+set cleaner ~/.config/lf/cleaner.sh

@@ -11,3 +11,10 @@ cd dotfiles
 stow .
 ```
 
+
+## TODO
+
+### lf
+
+- [ ] speedup previewer
+- [ ] fix previewer music metadata

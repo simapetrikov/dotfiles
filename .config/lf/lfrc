@@ -35,7 +35,8 @@ cmd mkdir %{{
     fi
 }}
 
-map a :push !mkdir<space>
+map A :push $mkdir<space>
+map a :push $touch<space>
 
 cmd extract ${{
     set -f
@@ -108,7 +109,28 @@ map gL follow-link
 map p :paste; clear
 
 
+cmd rotate ${{
+    angle="${1:-90}"
+    while IFS= read -r f; do
+        magick "$f" -rotate "$angle" "$f"
+    done <<< "$fx"
+}}
 
+cmd mirror-h &{{
+    while IFS= read -r f; do
+        magick "$f" -flop "$f"
+    done <<< "$fx"
+}}
+
+cmd mirror-v &{{
+    while IFS= read -r f; do
+        magick "$f" -flip "$f"
+    done <<< "$fx"
+}}
+
+map Ir :rotate
+map Imh :mirror-h
+map Imv :mirror-v
 
 set preview true
 #set previewtruecolor

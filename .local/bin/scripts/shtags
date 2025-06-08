@@ -1,0 +1,17 @@
+#!/bin/bash
+#!/bin/bash
+# This script extracts the first line from each file in the current directory,
+# splits the line on '#' (ignoring the initial empty field),
+# builds a unique set of tags, and outputs them to dmenu.
+
+awk 'FNR==1 {
+  n = split($0, a, "#");  # split on '#' delimiter
+  for(i=2; i<=n; i++){
+    tags[a[i]] = 1;      # collect tags (starting at index 2 because the first is empty)
+  }
+}
+END {
+  for(tag in tags){
+    print tag;       # add '#' back when printing
+  }
+}' * | sort 

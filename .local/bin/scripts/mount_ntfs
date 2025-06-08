@@ -1,0 +1,50 @@
+#!/bin/bash
+
+USER_NAME=$(whoami)
+
+DEVICE="$1"
+PARTITION=${DEVICE##*/}
+FOLDER_NAME=$(lsblk -f | grep "$PARTITION" | awk '{print $3}')
+MOUNT_POINT="/run/media/$USER_NAME/${FOLDER_NAME}"
+
+
+
+# Check if the device is available and display its details
+if lsblk -f | grep "$PARTITION"; then
+    echo "Device $DEVICE detected."
+else
+    echo "Device $DEVICE not found. Exiting."
+    exit 1
+fi
+
+# Check filesystem type and mount if NTFS
+FS_TYPE=$(lsblk -f | grep "$PARTITION" | awk '{print $2}')
+
+if [ "$FS_TYPE" == "ntfs" ]; then
+    echo "Device $DEVICE has NTFS filesystem."
+
+    # Attempt to mount the device with ntfs3 (recommended for newer Linux versions)
+    echo "Attempting to mount $DEVICE at $MOUNT_POINT..."
+    sudo mkdir -p "$MOUNT_POINT"
+    sudo mount  "$DEVICE" "$MOUNT_POINT" 2>/tmp/mount_error.log
+
+    # Check if the mount command succeeded
+    if mountpoint -q "$MOUNT_POINT"; then
+        echo "$DEVICE successfully mounted at $MOUNT_POINT."
+    else
+        echo "Mount failed. Checking for errors..."
+
+        # Check the error log for "volume is dirty" warning
+        if grep -q "volume is dirty" /tmp/mount_error.log; then
+            echo "Warning: NTFS volume is marked as dirty. Attempting to clear dirty flag."
+
+            # Attempt to fix with ntfsfix
+            sudo ntfsfix "$DEVICE"
+            echo "Please unplug and re-plug the device. If errors persist, run chkdsk on Windows."
+        else
+            echo "An error occurred that requires manual intervention. Check /tmp/mount_error.log for details."
+        fi
+    fi
+else
+    echo "$DEVICE does not have an NTFS filesystem. Exiting."
+fi

@@ -1,0 +1,3 @@
+#!/bin/sh
+~/.screenlayout/$(ls ~/.screenlayout | dmenu) && feh --bg-fill /etc/wm/src/wallpaper.png
+

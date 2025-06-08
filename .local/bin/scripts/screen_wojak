@@ -1,0 +1,20 @@
+#!/bin/sh
+
+date=$(date +%Y%m%d%H%M%S)
+
+path=$HOME/Pictures/screenshots/$date.png 
+
+wojak_path=$HOME/Pictures/wojak_pointing_template.png
+
+wojak_tmp=/tmp/$date.png
+
+flameshot gui -p $path
+
+
+screen_size=$(identify -ping -format '%wx%h' $path)
+
+convert $wojak_path -colorspace RGB -resize $screen_size\! $wojak_tmp
+
+composite -dissolve 100 -gravity Center $wojak_tmp $path -alpha Set -profile sRGB $path
+
+cb copy $HOME/Pictures/screenshots/$date.png

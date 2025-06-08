@@ -1,0 +1,25 @@
+#! /bin/bash
+clipmenu
+link=$(xclip -o)
+
+#echo $link | dmenu -l 1 -c 
+echo $link
+
+wget -P /home/dm/.config/scripts/downloads/ $link 
+
+file=$(ls /home/dm/.config/scripts/downloads/)
+fullfile="/home/dm/.config/scripts/downloads/$file"
+#xdg-open /home/dm/.config/scripts/downloads/$file
+
+newfile=$(python /home/dm/programming/piton/project/necoarc/a.py $fullfile)
+newfullfile="/home/dm/programming/piton/project/necoarc/base/$newfile"
+echo $newfullfile
+
+feh $newfile || mpv --loop-file $newfullfile &
+
+cd /home/dm/programming/piton/project/necoarc/
+
+kitty python c.py $newfile
+
+
+rm $fullfile

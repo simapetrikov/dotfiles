@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /home/dm/Projects/ai/amplitudes || exit
+uv run main.py "$@"
+#/home/dm/Projects/ai/c/amplitudes/waveform "$@"

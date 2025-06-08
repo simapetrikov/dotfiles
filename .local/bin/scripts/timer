@@ -1,0 +1,18 @@
+#!/bin/bash
+
+TIME=$(echo "" | dmenu -p "скока:")
+
+
+MESSAGE=$(echo "" | dmenu -p "message:")
+
+
+if [ -z "$MESSAGE" ]; then
+  MESSAGE="timer for $TIME is over"
+fi
+
+dunstify -t 2500 "заведён таймер на $TIME, с сообщением $MESSAGE"
+
+sleep $TIME
+
+
+dunstify -t 2500 "$MESSAGE"

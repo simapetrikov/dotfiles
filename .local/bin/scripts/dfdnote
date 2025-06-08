@@ -1,0 +1,27 @@
+#!/bin/sh
+NOTES_DIR="$HOME/Documents/vimwiki/notes"
+cd "$NOTES_DIR" || exit 1
+[ -f "$TEMP_FILE" ] && rm "$TEMP_FILE"
+
+FILES=$(rg -l "$1" --glob '*.md' | sort)
+[ -z "$FILES" ] && exit 1
+
+declare -A NOTE_FILES
+NOTES=()
+
+for file in $FILES; do
+  {
+    IFS= read -r first_line
+    IFS= read -r second_line
+  } < "$file"
+  note="$second_line $first_line"
+  NOTE_FILES["$note"]="$file"
+  NOTES+=("$note")
+done
+
+[ ${#NOTES[@]} -eq 0 ] && exit 1
+
+CHOSEN=$(printf "%s\n" "${NOTES[@]}" | dmenu -l 10)
+FILE="${NOTE_FILES["$CHOSEN"]}"
+
+[ -n "$FILE" ] && $EDITOR "$FILE"

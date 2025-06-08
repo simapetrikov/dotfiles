@@ -1,0 +1,17 @@
+#!/bin/sh
+
+date=$(date +%Y%m%d%H%M%S)
+
+file=$HOME/Pictures/screenshots/$date.png
+
+flameshot gui -p $file
+
+echo $file
+
+qr_code_text=$(zbarimg $file --raw ) && notify-send 'qr распознан' 
+
+cb copy $qr_code_text
+
+xdg-open $qr_code_text
+
+

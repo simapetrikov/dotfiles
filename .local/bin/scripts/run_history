@@ -1,0 +1,12 @@
+#!/bin/bash
+source ~/.bashrc
+
+if [[ -z "$HISTFILE" || ! -f "$HISTFILE" ]]; then
+  HISTFILE="$HOME/.bash_history"
+fi
+
+selected_command=$(cat "$HISTFILE" | dmenu -p "Select command:")
+
+if [[ -n "$selected_command" ]]; then
+  eval "$selected_command"
+fi

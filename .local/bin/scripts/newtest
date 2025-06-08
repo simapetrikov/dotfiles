@@ -1,0 +1,21 @@
+#!/bin/sh
+
+TEST_FOLDER="$HOME/test"
+
+find "$TEST_FOLDER" -type d -empty -delete
+
+counter=1
+
+while [[ true ]]; do
+  folder_name=$(printf "%02d" $counter)
+  folder_path="$TEST_FOLDER/$folder_name"
+  
+  if [ ! -d "$folder_path" ]; then
+    mkdir $folder_path 
+    break
+  fi
+
+  ((counter++))
+done
+
+cd "$folder_path" && bash

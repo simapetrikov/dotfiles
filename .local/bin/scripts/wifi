@@ -1,0 +1,146 @@
+#!/bin/sh
+divider="---------"
+goback="Back"
+exit="Exit"
+DMENU_WIFI_PROMPT="${DMENU_WIFI_PROMPT:-Select WiFi  :}"
+DMENU_WIFI_LAUNCHER="${DMENU_WIFI_LAUNCHER:-dmenu}"
+
+# Checks if the WiFi radio is enabled
+wifi_enabled() {
+    nmcli radio wifi | grep -F -q "enabled"
+}
+
+# Toggles the WiFi radio state
+toggle_wifi() {
+    if wifi_enabled; then
+        nmcli radio wifi off
+    else
+        nmcli radio wifi on
+        sleep 3
+    fi
+    show_menu
+}
+
+# Lists available WiFi networks (ignores the header line)
+list_wifi_networks() {
+    nmcli device wifi list | sed '1d'
+}
+
+# Connects to the selected WiFi network using nmcli.
+connect_wifi() {
+    # Get list of networks and allow selection via dmenu.
+    local wifi_line
+    wifi_line=$(list_wifi_networks | cut -c9- | ${DMENU_WIFI_LAUNCHER} -i -p "${DMENU_WIFI_PROMPT}")
+    # If nothing selected, return to menu.
+    [[ -z "$wifi_line" ]] && { echo "No network selected."; show_menu; return; }
+
+    # Extract the SSID (assumes SSID is the first field)
+    local ssid pass
+    ssid=$(echo "$wifi_line" | awk '{print $1}')
+    
+    # Prompt for password (blank means open network)
+    pass=$(echo "" | ${DMENU_WIFI_LAUNCHER} -i -p "Enter Password  :")
+    
+    if [ -n "$pass" ]; then
+        nmcli device wifi connect "$ssid" password "$pass"
+    else
+        nmcli device wifi connect "$ssid"
+    fi
+    
+    sleep 10
+    test_connection
+    show_menu
+}
+
+# Tests internet connectivity by pinging google.com
+test_connection() {
+    if ping -q -c 2 -W 2 google.com >/dev/null; then
+        notify-send "WiFi" "Your internet is working :)"
+    else
+        notify-send "WiFi" "Your internet is not working :("
+    fi
+}
+
+# Prints a short status summary for use in a status bar.
+print_status() {
+    if wifi_enabled; then
+        # Show current SSID if connected
+        current=$(nmcli -t -f active,ssid dev wifi | grep "^yes:" | cut -d: -f2)
+        if [ -n "$current" ]; then
+            printf " %s\n" "$current"
+        else
+            echo " enabled"
+        fi
+    else
+        echo "睊 disabled"
+    fi
+}
+
+# Opens the main dmenu to choose WiFi actions.
+show_menu() {
+    local power status options chosen
+    if wifi_enabled; then
+        power="WiFi: on"
+    else
+        power="WiFi: off"
+    fi
+    status=$(print_status)
+    
+    options="${power}\nConnect\nTest Connection\nToggle WiFi\n${divider}\nExit"
+    
+    chosen=$(echo -e "$options" | ${DMENU_WIFI_LAUNCHER} -i -p "WiFi Menu")
+    
+    case "$chosen" in
+        "$power")
+            show_menu
+            ;;
+        "Connect")
+            connect_wifi
+            ;;
+        "Test Connection")
+            test_connection
+            show_menu
+            ;;
+        "Toggle WiFi")
+            toggle_wifi
+            ;;
+        "$exit")
+            exit 0
+            ;;
+        "$divider"|"")
+            exit 0
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+}
+
+# Parse command line arguments
+dmenu_args=("$@")
+case "$1" in
+    --help)
+        print_help
+        exit 0
+        ;;
+    --status)
+        print_status
+        exit 0
+        ;;
+esac
+
+# If there are extra arguments, pass them to dmenu
+if [ ${#dmenu_args[@]} -gt 0 ]; then
+    DMENU_WIFI_LAUNCHER="${DMENU_WIFI_LAUNCHER} ${dmenu_args[*]}"
+fi
+
+# Optionally log configuration differences (if such a function or check exists)
+if type configs_are_different &>/dev/null; then
+    if configs_are_different; then
+        echo "$(date): configs are different" >>"${DM_CONFIG_DIFF_LOGFILE:-/tmp/diff.log}"
+        sleep 1
+    fi
+fi
+
+# Start the menu if the script is executed directly.
+[[ "${BASH_SOURCE[0]}" == "${0}" ]] && show_menu

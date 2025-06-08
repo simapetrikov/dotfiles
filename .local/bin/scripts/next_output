@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Get the list of sinks
+SINKS=$(pactl list sinks short | awk '{print $2}')
+
+# Get the currently default sink
+CURRENT_SINK=$(pactl get-default-sink)
+
+# Find the index of the current sink
+SINKS_ARRAY=($SINKS)
+CURRENT_INDEX=-1
+for i in "${!SINKS_ARRAY[@]}"; do
+  if [[ "${SINKS_ARRAY[$i]}" == "$CURRENT_SINK" ]]; then
+    CURRENT_INDEX=$i
+  fi
+done
+
+# Set the next sink as default
+NEXT_INDEX=$(( (CURRENT_INDEX + 1) % ${#SINKS_ARRAY[@]} ))
+NEXT_SINK="${SINKS_ARRAY[$NEXT_INDEX]}"
+
+# Set the next sink as default
+pactl set-default-sink "$NEXT_SINK"
+
+# Optionally: Change the volume with pulsemixer if needed
+pulsemixer --output "$NEXT_SINK"

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+date=$(date +%Y%m%d%H%M%S)
+
+flameshot gui -p $HOME/Pictures/screenshots/$date.png 
+
+
+echo "$HOME/Pictures/screenshots/$date.png" | xclip -selection c
+cb copy $HOME/Pictures/screenshots/$date.png

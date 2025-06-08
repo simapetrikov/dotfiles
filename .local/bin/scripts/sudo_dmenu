@@ -1,0 +1,11 @@
+#! /bin/sh
+
+CMD="$*"
+
+[ -z "$CMD" ] && exit 1
+
+PASSWORD=$(dmenu -P -p "password:" < /dev/null)
+
+[ -z "$PASSWORD" ] && exit 1
+
+echo "$PASSWORD" | sudo -S $CMD

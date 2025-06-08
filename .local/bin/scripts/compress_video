@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# compress_video.sh
+# Usage: ./compress_video.sh <file1> <file2> <file3>
+# The script compresses each input video so that its output file is limited to 8 MB.
+# Output files are named as "<filename>_compressed.mp4".
+
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <file1> <file2> <file3>"
+    exit 1
+fi
+
+for input_file in "$@"; do
+    if [ ! -f "$input_file" ]; then
+        echo "File '$input_file' not found, skipping..."
+        continue
+    fi
+
+    # Extract the filename without extension
+    filename="${input_file%.*}"
+    output_file="${filename}_compressed.mp4"
+
+    # Compress video:
+    # - Using libx264 with a CRF value of 28 (adjust for quality vs. size)
+    # - Using veryslow preset for better compression efficiency
+    # - Compressing audio with AAC at 128 kbps
+    # - Using -fs 8M to limit the output file size to 8 MB
+    # ffmpeg -i "$input_file" -c:v libx264 -crf 28 -preset veryslow -c:a aac -b:a 128k -fs 8M "$output_file"
+
+    ffmpeg -i "$input_file" \
+      -c:v libx264 -crf 28 -preset veryslow \
+      -c:a aac -b:a 128k -ac 2 \
+      -fs 8M "$output_file"
+
+
+    echo "Compressed '$input_file' -> '$output_file'"
+done

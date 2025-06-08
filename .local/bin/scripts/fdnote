@@ -1,0 +1,16 @@
+#!/bin/sh
+NOTES_DIR="$HOME/Documents/vimwiki/notes"
+TEMP_FILE="$NOTES_DIR/fdnote_output.md"
+LINES=${2:-0}
+cd $NOTES_DIR || exit 1
+[ -f "$FILE" ] && rm "$FILE"
+FILES=$(rg -l "($1)" --max-count=1 --glob '*.md'| sort)
+for file in $FILES; do
+  echo "[$(sed -n '2p' "$file")]($file)" >> $TEMP_FILE
+  for i in $(seq 1 "$LINES"); do
+    sed -n "$((i + 2))p" "$file" >> "$TEMP_FILE"
+  done
+done
+
+$EDITOR $TEMP_FILE
+rm "$TEMP_FILE"

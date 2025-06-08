@@ -1,0 +1,57 @@
+#!/bin/sh
+set -euo pipefail
+
+MENU="dmenu -i -p"
+
+confirm() {
+    local prompt="$1"
+    local answer
+    answer=$(echo -e "No\nYes" | ${MENU} "${prompt}?")
+    [[ "$answer" == "Yes" ]]
+}
+
+main() {
+    local options=("Lock screen" "Logout" "Reboot" "Shutdown" "Suspend" "Quit")
+    local choice
+
+    choice=$(printf '%s\n' "${options[@]}" | ${MENU} "Shutdown menu:")
+
+    case "$choice" in
+        "Lock screen")
+            exec i3lock 
+            ;;
+        "Logout")
+            if confirm "Logout"; then
+                loginctl terminate-user "$USER"
+            else
+                echo "Logout canceled."
+            fi
+            ;;
+        "Reboot")
+            if confirm "Reboot"; then
+                systemctl reboot
+            else
+                echo "Reboot canceled."
+            fi
+            ;;
+        "Shutdown")
+            if confirm "Shutdown"; then
+                systemctl poweroff
+            else
+                echo "Shutdown canceled."
+            fi
+            ;;
+        "Suspend")
+            if confirm "Suspend"; then
+                systemctl suspend
+            else
+                echo "Suspend canceled."
+            fi
+            ;;
+        "Quit" | *)
+            echo "Exiting menu."
+            ;;
+    esac
+}
+
+main

@@ -1,0 +1,7 @@
+ #!/bin/sh
+flameshot gui --path /tmp/img.png
+language=$(echo -e "eng+rus\neng\nrus" | dmenu -l 3)
+text=$(tesseract -l $language /tmp/img.png -)
+echo $text
+echo $text | dmenu -l 1 | xclip -selection clipboard
+rm /tmp/img.png

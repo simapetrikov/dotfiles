@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Extract application names and commands from .desktop files
+app_list=$(cat /usr/share/applications/*.desktop ~/.local/share/applications/*.desktop 2>/dev/null | \
+grep -E '^Name=|^Exec=' | \
+sed -n 'N;s/\n/ /p' | \
+sed 's/Name=//;s/Exec=//;s/%.//g' | \
+sort -u)
+
+# Show the application list in dmenu
+selected_app=$(echo "$app_list" | awk '{print $1}' | dmenu -i -l 20 -p "Select application:")
+
+# Get the full command for the selected app
+selected_cmd=$(echo "$app_list" | grep "^$selected_app " | awk '{print $2}')
+
+# Show a notification or output the command (do not run)
+if [ -n "$selected_cmd" ]; then
+    notify-send "Selected Application" "Name: $selected_app\nCommand: $selected_cmd"
+    echo "You selected: $selected_app (Command: $selected_cmd)"
+else
+    notify-send "No application selected or found."
+fi

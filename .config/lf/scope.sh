@@ -67,6 +67,10 @@ handle_extension() {
     exit 1;;
 
     ## PDF
+  py)
+    bat --color=never --style="plain" "${FILE_PATH}" | gay -g && exit 5
+    exit 1;;
+ 
     pdf)
     ## Preview as text conversion
     pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" - | \
@@ -359,6 +363,7 @@ handle_mime() {
     exit 1;;
     ## Audio
     audio/*)
+    waveform $FILE_PATH $w 5
     mediainfo $FILE_PATH
     exit 1;;
 esac

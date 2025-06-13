@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Set base archive directory
+ARCHIVE_DIR="ARCHIVE"
+
+# File extensions for images and videos (lowercase)
+IMAGE_MIME="image"
+VIDEO_MIME="video"
+
+# Create archive root if not exists
+mkdir -p "$ARCHIVE_DIR"
+
+# Loop through all files in current directory
+for file in *; do
+    # Skip if not a regular file
+    [ -f "$file" ] || continue
+
+    # Get MIME type
+    mime_type=$(file --mime-type -b "$file")
+    category=""
+
+    if [[ "$mime_type" == ${IMAGE_MIME}/* ]]; then
+        category="Pictures"
+    elif [[ "$mime_type" == ${VIDEO_MIME}/* ]]; then
+        category="Video"
+    else
+        continue  # Skip unknown types
+    fi
+
+    # Get file modification date
+    year=$(date -r "$file" +"%Y")
+    month_name=$(date -r "$file" +"%m")
+    month_folder="${month_name}"
+
+    # Construct target directory
+    target_dir="$ARCHIVE_DIR/$category/$year/$month_folder"
+    mkdir -p "$target_dir"
+
+    # Move file
+    mv "$file" "$target_dir/"
+    echo "Moved '$file' → $target_dir/"
+done

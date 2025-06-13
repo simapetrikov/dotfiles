@@ -35,8 +35,8 @@ cmd mkdir %{{
     fi
 }}
 
-map Fo :push $mkdir<space>
-map Fi :push $touch<space>
+map Cfo :push $mkdir<space>
+map Cfi :push $touch<space>
 
 cmd extract ${{
     set -f

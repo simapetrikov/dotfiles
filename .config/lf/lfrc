@@ -16,9 +16,7 @@ map D :trash
 
 
 cmd drop ${{
-    while IFS= read -r f; do
-        blobdrop "$f"
-    done <<< "$fx"
+    blobdrop $fx
 }}
 
 
@@ -35,8 +33,8 @@ cmd mkdir %{{
     fi
 }}
 
-map Cfo :push $mkdir<space>
-map Cfi :push $touch<space>
+map Co :push $mkdir<space>
+map Ci :push $touch<space>
 
 cmd extract ${{
     set -f

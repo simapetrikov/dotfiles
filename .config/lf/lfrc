@@ -16,7 +16,9 @@ map D :trash
 
 
 cmd drop ${{
-    blobdrop $fx
+  IFS=$'\n'
+  files=($fx)
+  blobdrop "${files[@]}"
 }}
 
 

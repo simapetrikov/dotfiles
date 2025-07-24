@@ -14,3 +14,4 @@ set.incsearch = true
 
 set.scrolloff = 8
 
+vim.keymap.set('n', 'Q', ':q<CR>', {noremap = true, silent = true})

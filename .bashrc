@@ -66,9 +66,15 @@ parse_git_branch() {
 
 export PS1="\[\e[32m\]\u@\h:\[\e[34m\]\w\[\e[0m\]\$(parse_git_branch)$ "
 
-echo -e "              Howdy, \033[35m$(whoami)\033[37m!"
+echo -e "              Howdy, \033[35m$(whoami)\033[37m! from \033[35m$(hostnamectl hostname)\033[37m <3"
 echo "   /ᐠ-˕-マ  ノ"
 echo "乀(  J し)"
 
+when cm
+
 # zoxide
 eval "$(zoxide init bash)"
+
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi

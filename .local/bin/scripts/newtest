@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TEST_FOLDER="$HOME/test"
+TEST_FOLDER="$HOME/tests"
 
 find "$TEST_FOLDER" -type d -empty -delete
 

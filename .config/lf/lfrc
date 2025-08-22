@@ -151,7 +151,7 @@ cmd compress_video !{{
     done <<< "$fx"
 }}
 
-map Vc :compress_video 
+map Ic :compress_video 
 
 set preview true
 #set previewtruecolor

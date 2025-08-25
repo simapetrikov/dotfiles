@@ -20,6 +20,10 @@ HISTFILESIZE=20000
 HISTCONTROL=ignoredups
 shopt -s histappend
 
+
+if [ -d "$HOME/.cargo/bin" ] ; then
+    export PATH=$HOME/.cargo/bin:$PATH
+fi
 if [ -d "$HOME/.local/bin/scripts" ] ; then
     export PATH=$HOME/.local/bin/scripts:$PATH
 fi

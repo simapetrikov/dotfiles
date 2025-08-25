@@ -74,7 +74,9 @@ echo -e "              Howdy, \033[35m$(whoami)\033[37m! from \033[35m$(hostname
 echo "   /ᐠ-˕-マ  ノ"
 echo "乀(  J し)"
 
-when cm
+if type when >/dev/null 2>&1; then
+    when cm
+fi
 
 # zoxide
 eval "$(zoxide init bash)"

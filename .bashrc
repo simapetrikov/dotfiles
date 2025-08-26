@@ -40,7 +40,7 @@ alias paru-find='paru -Slq | fzf --multi --preview "paru -Si {1}"'
 
 alias rm='rm -i'
 
-alias cat='bat --style=grid'
+alias cat='bat -p --style=grid'
 alias grep='rg'
 alias cp='xcp'
 alias ls='ls --color=auto'

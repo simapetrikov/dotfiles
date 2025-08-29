@@ -1,11 +1,29 @@
-#! /bin/sh
+#!/bin/sh
 
 CMD="$*"
 
-[ -z "$CMD" ] && exit 1
+COMMAND_NAME=$(echo "$CMD" | awk '{print $1}')
 
-PASSWORD=$(dmenu -P -p "password:" < /dev/null)
+if ! command -v "$COMMAND_NAME" >/dev/null 2>&1; then
+    notify-send "sudo dmenu" "dont know that one"
+    exit 1
+fi
+
+PASSWORD=$(dmenu -P -p "Password:" < /dev/null)
 
 [ -z "$PASSWORD" ] && exit 1
 
-echo "$PASSWORD" | sudo -S $CMD
+MAX_ATTEMPTS=3
+ATTEMPT=1
+while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+    echo "$PASSWORD" | sudo -S $CMD && break
+    notify-send "sudo dmenu" "<i>Неправельно, попробуй ещё раз</i>"
+    PASSWORD=$(dmenu -P -p "Password:" < /dev/null)
+    [ -z "$PASSWORD" ] && exit 1
+    ATTEMPT=$((ATTEMPT + 1))
+done
+
+if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+    notify-send "sudo dmenu" "Ну всё браток, ты попал <br> <b>faillock --user $USER --reset</b>"
+    exit 1
+fi

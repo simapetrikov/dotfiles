@@ -14,6 +14,7 @@ export READER="zathura"
 export PREFIX="~/.local"
 
 export HISTFILE=$HOME/.bash_history
+export TERM=xterm-256color
 
 HISTSIZE=10000
 HISTFILESIZE=20000
@@ -45,6 +46,7 @@ alias grep='rg'
 alias cp='xcp'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
+alias ip='ip -c'
 
 
 alias vim='nvim'
